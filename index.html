@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scope Creep Calculator | Founder's Reality Check</title>
+    <style>
+        :root {
+            --green: #10B981;
+            --yellow: #F59E0B;
+            --red: #EF4444;
+            --bg-color: #F9FAFB;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-panel {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .category {
+            margin-bottom: 25px;
+        }
+
+        .category h3 {
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            color: #374151;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .feature-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .feature-item label {
+            cursor: pointer;
+            flex-grow: 1;
+            font-size: 1rem;
+        }
+
+        .feature-points {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background: var(--bg-color);
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        /* Dashboard / Gauge Panel */
+        .dashboard-panel {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 40px;
+            height: fit-content;
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 20px 0 0 0;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .score-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .gauge-container {
+            width: 100%;
+            height: 24px;
+            background-color: #E5E7EB;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--green);
+            transition: width 0.4s ease, background-color 0.4s ease;
+        }
+
+        .status-message {
+            padding: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+            background-color: #ECFDF5;
+            color: #065F46;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .dashboard-panel {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                top: auto;
+                border-radius: 20px 20px 0 0;
+                box-shadow: 0 -10px 20px rgba(0,0,0,0.1);
+                padding: 20px;
+                z-index: 100;
+            }
+            .features-panel {
+                margin-bottom: 250px; /* Space for the sticky bottom bar */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Scope Creep Calculator</h1>
+            <p>Select the features for your app idea to instantly calculate the engineering effort and risk. 1 Point ≈ 1 Week of Developer Effort.</p>
+        </header>
+
+        <div class="features-panel">
+            
+            <div class="category">
+                <h3>1. User Identity & Access</h3>
+                <div class="feature-item">
+                    <input type="checkbox" id="f1" value="2" onchange="calculateScore()">
+                    <label for="f1">Email & Password Login</label>
+                    <span class="feature-points">+2 pts</span>
+                </div>
+                <div class="feature-item">
+                    <input type="checkbox" id="f2" value="4" onchange="calculateScore()">
+                    <label for="f2">Social Login (Google/Apple)</label>
+                    <span class="feature-points">+4 pts</span>
+                </div>
+                <div class="feature-item">
+                    <input type="checkbox" id="f3" value="7" onchange="calculateScore()">
+                    <label for="f3">Biometric Login (FaceID/Fingerprint)</label>
+                    <span class="feature-points">+7 pts</span>
+                </div>
+            </div>
+
+            <div class="category">
+                <h3>2. Data & Core Mechanics</h3>
+                <div class="feature-item">
+                    <input type="checkbox" id="f4" value="2" onchange="calculateScore()">
+                    <label for="f4">User Profiles & Settings</label>
+                    <span class="feature-points">+2 pts</span>
+                </div>
+                <div class="feature-item">
+                    <input type="checkbox" id="f5" value="5" onchange="calculateScore()">
+                    <label for="f5">Search & Filtering Engine</label>
+                    <span class="feature-points">+5 pts</span>
+                </div>
+                <div class="feature-item">
+                    <input type="checkbox" id="f6" value="4" onchange="calculateScore()">
+                    <label for="f6">File / Image Uploads</label>
+                    <span class="feature-points">+4 pts</span>
+                </div>
+            </div>
+
+            <div class="category">
+                <h3>3. Monetization & Revenue</h3>
+                <div class="feature-item">
+                    <input type="checkbox" id="f7" value="5" onchange="calculateScore()">
+                    <label for="f7">One-time Card Payment (Stripe)</label>
+                    <span class="feature-points">+5 pts</span>
+                </div>
+                <div class="feature-item">
+                    <input type="checkbox" id="f8" value="8" onchange="calculateScore()">
+                    <label for="f8">Recurring Subscriptions</label>
+                    <span class="feature-points">+8 pts</span>
+                </div>
+                <div class="feature-item">
+                    <input type="checkbox" id="f9" value="12" onchange="calculateScore()">
+                    <label for="f9">Crypto / Web3 Payments</label>
+                    <span class="feature-points">+12 pts</span>
+                </div>
+            </div>
+
+            <div class="category">
+                <h3>4. Communication & Engagement</h3>
+                <div class="feature-item">
+                    <input type="checkbox" id="f10" value="2" onchange="calculateScore()">
+                    <label for="f10">Basic Email Alerts</label>
+                    <span class="feature-points">+2 pts</span>
+                </div>
+                <div class="feature-item">
+                    <input type="checkbox" id="f11" value="6" onchange="calculateScore()">
+                    <label for="f11">Push Notifications</label>
+                    <span class="feature-points">+6 pts</span>
+                </div>
+                <div class="feature-item">
+                    <input type="checkbox" id="f12" value="10" onchange="calculateScore()">
+                    <label for="f12">Real-time In-App Chat</label>
+                    <span class="feature-points">+10 pts</span>
+                </div>
+            </div>
+
+            <div class="category">
+                <h3>5. The "Hype" & Big Bets</h3>
+                <div class="feature-item">
+                    <input type="checkbox" id="f13" value="8" onchange="calculateScore()">
+                    <label for="f13">3rd-Party API Integration (Notion, etc.)</label>
+                    <span class="feature-points">+8 pts</span>
+                </div>
+                <div class="feature-item">
+                    <input type="checkbox" id="f14" value="7" onchange="calculateScore()">
+                    <label for="f14">AI Text Wrapper (OpenAI API)</label>
+                    <span class="feature-points">+7 pts</span>
+                </div>
+                <div class="feature-item">
+                    <input type="checkbox" id="f15" value="12" onchange="calculateScore()">
+                    <label for="f15">Real-time Location Tracking</label>
+                    <span class="feature-points">+12 pts</span>
+                </div>
+                <div class="feature-item">
+                    <input type="checkbox" id="f16" value="25" onchange="calculateScore()">
+                    <label for="f16">Custom Trained Machine Learning Model</label>
+                    <span class="feature-points">+25 pts</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="dashboard-panel">
+            <h2 style="margin-top: 0; color: #374151;">Complexity Score</h2>
+            <div id="scoreDisplay" class="score-display" style="color: var(--green);">0</div>
+            <p class="score-subtitle">Estimated Weeks of Dev Effort</p>
+
+            <div class="gauge-container">
+                <div id="gaugeFill" class="gauge-fill"></div>
+            </div>
+
+            <div id="statusMessage" class="status-message">
+                <strong>Lean MVP.</strong><br> Great job! You haven't added any features yet. Keep it simple!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateScore() {
+            // Get all checkboxes
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let totalScore = 0;
+
+            // Loop through and add up values of checked boxes
+            checkboxes.forEach(box => {
+                if (box.checked) {
+                    totalScore += parseInt(box.value);
+                }
+            });
+
+            // Update the score text
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            scoreDisplay.innerText = totalScore;
+
+            // Update the gauge (Max out visual gauge at 50 points)
+            const gaugeFill = document.getElementById('gaugeFill');
+            let gaugePercentage = (totalScore / 50) * 100;
+            if (gaugePercentage > 100) gaugePercentage = 100;
+            gaugeFill.style.width = gaugePercentage + '%';
+
+            // Logic Engine: Change colors and text based on score
+            const statusMessage = document.getElementById('statusMessage');
+
+            if (totalScore === 0) {
+                scoreDisplay.style.color = 'var(--green)';
+                gaugeFill.style.backgroundColor = 'var(--green)';
+                statusMessage.style.backgroundColor = '#ECFDF5';
+                statusMessage.style.color = '#065F46';
+                statusMessage.innerHTML = '<strong>Lean MVP.</strong><br> Great job! You haven\'t added any features yet. Keep it simple!';
+            } 
+            else if (totalScore <= 15) {
+                scoreDisplay.style.color = 'var(--green)';
+                gaugeFill.style.backgroundColor = 'var(--green)';
+                statusMessage.style.backgroundColor = '#ECFDF5';
+                statusMessage.style.color = '#065F46';
+                statusMessage.innerHTML = '<strong>Lean MVP.</strong><br> This is a realistic, focused scope for a fast version 1 launch.';
+            } 
+            else if (totalScore <= 30) {
+                scoreDisplay.style.color = 'var(--yellow)';
+                gaugeFill.style.backgroundColor = 'var(--yellow)';
+                statusMessage.style.backgroundColor = '#FEF3C7';
+                statusMessage.style.color = '#92400E';
+                statusMessage.innerHTML = '<strong>Moderate Risk.</strong><br> Getting a bit heavy. Consider cutting 1 or 2 complex features for Version 1.';
+            } 
+            else {
+                scoreDisplay.style.color = 'var(--red)';
+                gaugeFill.style.backgroundColor = 'var(--red)';
+                statusMessage.style.backgroundColor = '#FEF2F2';
+                statusMessage.style.color = '#991B1B';
+                statusMessage.innerHTML = '<strong>🚨 SCOPE CREEP ALERT!</strong><br> This is no longer an MVP. You are building a massive enterprise app. Strip this back to validate your core problem first!';
+            }
+        }
+    </script>
+</body>
+</html>
